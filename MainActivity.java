@@ -21,7 +21,7 @@ import android.view.MotionEvent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.Display;
-
+import android.media.MediaPlayer;
 import android.content.Context;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Point;
@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
 
 	// Declare an instance of SnakeEngine
 	SnakeEngine snakeEngine;
-
+	static MediaPlayer mp;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -59,6 +59,8 @@ public class MainActivity extends Activity {
 
 		// Make snakeEngine the view of the Activity
 		setContentView(snakeEngine);
+		mp=MediaPlayer.create(this,R.raw.full);
+		mp.start();
 	}
 	@SuppressLint("MissingSuperCall")
 	@Override
@@ -88,6 +90,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 	private SoundPool soundPool;
 	private int eat_bob = -1;
 	private int snake_crash = -1;
+	
 
 	// For tracking movement Heading
 	public enum Heading {UP, RIGHT, DOWN, LEFT}
@@ -177,7 +180,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 		 */
 		eat_bob=soundPool.load(context,R.raw.eat,1);
 		snake_crash=soundPool.load(context,R.raw.dead,1);
-
+        
 
 
 		// Initialize the drawing objects
@@ -318,7 +321,11 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			//start again
 			soundPool.play(snake_crash, 1, 1, 0, 0, 1);
 			
-			
+		MainActivity.mp.pause();
+		MainActivity.mp.seekTo(0);
+		try{thread.sleep(500);}catch(Exception e){}
+			MainActivity.mp.start();
+			MainActivity.mp.setLooping(true);
 			newGame();
 		}
 	}
@@ -328,7 +335,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			canvas = surfaceHolder.lockCanvas();
 
 			// Fill the screen with Game Code School blue
-			canvas.drawColor(Color.argb(255, 60, 190, 182));
+			canvas.drawColor(Color.argb(255, 255, 201, 80));
 
 			// Set the color of the paint to draw the snake white
 			
@@ -337,7 +344,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			paint.setTextSize(70);
 			canvas.drawText("🅂🄲🄾🅁🄴 :" + score + " Highest:"+highest, 0, 120, paint);
 			paint.setTextSize(35);
-			canvas.drawText("©𝑺𝒉𝒂𝒓𝒂𝒅 𝑴𝒂𝒅𝒅𝒉𝒆𝒔𝒉𝒊𝒚𝒂", 0, 25, paint);
+			canvas.drawText("©Sharad Maddheshiya", 0, 25, paint);
 			
 			paint.setColor(Color.argb(255, 255, 255, 255));
 			// Draw the snake one block at a time
