@@ -105,6 +105,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 	private int bobX;
 	private int bobY;
 
+	private int highest;
 	// The size in pixels of a snake segment
 	private int blockSize;
 
@@ -198,6 +199,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			// Update 10 times a second
 			if(updateRequired()) {
 				update();
+				if(score>highest){highest=score;}
 				draw();
 			}
 
@@ -220,6 +222,8 @@ class SnakeEngine extends SurfaceView implements Runnable {
 	}
 	public void newGame() {
 		// Start with a single snake segment
+		
+		
 		snakeLength = 1;
 		snakeXs[0] = NUM_BLOCKS_WIDE / 2;
 		snakeYs[0] = numBlocksHigh / 2;
@@ -313,7 +317,8 @@ class SnakeEngine extends SurfaceView implements Runnable {
 		if (detectDeath()) {
 			//start again
 			soundPool.play(snake_crash, 1, 1, 0, 0, 1);
-
+			
+			
 			newGame();
 		}
 	}
@@ -330,7 +335,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			paint.setColor(Color.argb(255, 0, 0, 0));
 			// Scale the HUD text
 			paint.setTextSize(70);
-			canvas.drawText("🅂🄲🄾🅁🄴 :" + score, 0, 120, paint);
+			canvas.drawText("🅂🄲🄾🅁🄴 :" + score + " Highest:"+highest, 0, 120, paint);
 			paint.setTextSize(35);
 			canvas.drawText("©𝑺𝒉𝒂𝒓𝒂𝒅 𝑴𝒂𝒅𝒅𝒉𝒆𝒔𝒉𝒊𝒚𝒂", 0, 25, paint);
 			
@@ -382,7 +387,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 	}
 	float x1,x2;
 	float y1, y2;
-	private static final int SWIPE_THRESHOLD = 50;
+	private static final int SWIPE_THRESHOLD = 20;
 
 
 	@Override
