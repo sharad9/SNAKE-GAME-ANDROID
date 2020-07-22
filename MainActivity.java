@@ -341,11 +341,13 @@ class SnakeEngine extends SurfaceView implements Runnable {
     }
     public void spawnBob() {
         Random random = new Random();
-        bobX = random.nextInt(NUM_BLOCKS_WIDE - 10) + 10;
-        bobY = random.nextInt(((( screenY-numBlocksHigh*5)-(blockSize/2))/blockSize) - 10) + 10;
+        bobX = random.nextInt(NUM_BLOCKS_WIDE -1)+1 ;
+        int min=(((numBlocksHigh*4)-(blockSize/2))  /blockSize)+1;
+        int max=(((screenY-numBlocksHigh*5)-(blockSize/2))  /blockSize);
+        bobY = random.nextInt(max-min) + (min);
 
 
-        }
+    }
 
     private void eatBob(){
         //  Got him!
