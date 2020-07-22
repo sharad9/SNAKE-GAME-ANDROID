@@ -40,6 +40,8 @@ import android.graphics.Paint;
 import java.util.*;
 import android.view.Window;
 import android.graphics.Rect;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 public class MainActivity extends AppCompatActivity {
 
 
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     SnakeEngine snakeEngine;
     Boolean Pause=false;
     Button endGameButton;
+    String file="mydata";
     static MediaPlayer mp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +132,43 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public  void write(int score){
+        String data=score+"";
+        try {
+            FileOutputStream fOut = openFileOutput(file,MODE_WORLD_READABLE);
+            fOut.write(data.getBytes());
+            fOut.close();
+
+        }
+        catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public int read(){
+        String temp="";
+        try {
+            FileInputStream fin = openFileInput(file);
+            int c;
+
+            while( (c = fin.read()) != -1){
+                temp = temp + Character.toString((char)c);
+
+            }
+            if(temp==""){temp=0+"";}
+        }
+        catch(Exception e){
+        }
+        return Integer.parseInt(temp);
+    }
+    public void file(){
+        if(read()<SnakeEngine.highest){
+            write(SnakeEngine.highest);
+        }
+        SnakeEngine.highest=read();
+    }
+
 }
 class SnakeEngine extends SurfaceView implements Runnable {
 
@@ -160,7 +200,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
     private int bobX;
     private int bobY;
 
-    private int highest;
+    static int highest;
     // The size in pixels of a snake segment
     private int blockSize;
 
@@ -396,7 +436,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
             // Fill the screen with Game Code School blue
             canvas.drawColor(Color.argb(255, 0, 0, 0));
 
-            paint.setColor(Color.argb(255, 220, 201, 80));
+            paint.setColor(Color.argb(255, 100, 100, 100));
             Rect r=new Rect(0,numBlocksHigh*4,screenX,screenY-numBlocksHigh*5);
             canvas.drawRect(r,paint);
             // Set the color of the paint to draw the snake white
@@ -411,16 +451,17 @@ class SnakeEngine extends SurfaceView implements Runnable {
             paint.setColor(Color.argb(255, 255, 255, 255));
             // Draw the snake one block at a time
             paint.setStrokeCap(Paint.Cap.ROUND);
-            paint.setStrokeWidth(28f);
+            paint.setStrokeWidth(25f);
             for (int i = 1; i < snakeLength; i++) {
+               /*
                 canvas.drawRect(snakeXs[i] * blockSize,
                         (snakeYs[i] * blockSize),
                         (snakeXs[i] * blockSize) + blockSize,
                         (snakeYs[i] * blockSize) + blockSize,
                         paint);
-
-                //  canvas.drawPoint((snakeXs[i] * blockSize)+(blockSize/2),
-                //			 (snakeYs[i] * blockSize)+(blockSize/2),paint);
+                   */
+                  canvas.drawPoint((snakeXs[i] * blockSize)+(blockSize/2),
+                		 (snakeYs[i] * blockSize)+(blockSize/2),paint);
             }
             paint.setColor(Color.argb(255, 0, 0, 0));
 			/*
