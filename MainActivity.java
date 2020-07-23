@@ -1,5 +1,11 @@
-package com.example.myapplication;
-import androidx.appcompat.app.AppCompatActivity;
+package com.mycompany.myapp2;
+
+
+import android.app.Activity;
+
+
+
+
 import android.app.Activity;
 
 
@@ -42,7 +48,7 @@ import android.view.Window;
 import android.graphics.Rect;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
 
 
@@ -87,25 +93,25 @@ public class MainActivity extends AppCompatActivity {
         endGameButton.setY(0);
 
         endGameButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view)
-            {
-                if(Pause==false){
-                    endGameButton.setText("Play");
-                    snakeEngine.pause();
+				@Override
+				public void onClick(View view)
+				{
+					if(Pause==false){
+						endGameButton.setText("Play");
+						snakeEngine.pause();
 
-                    Pause=true;
+						Pause=true;
 
-                }else{
-                    endGameButton.setText("Pause");
+					}else{
+						endGameButton.setText("Pause");
 
-                    snakeEngine.resume();
+						snakeEngine.resume();
 
-                    Pause=false;
-                }
+						Pause=false;
+					}
 
-            }
-        });
+				}
+			});
         gameWidgets.addView(endGameButton);
 
         game.addView(snakeEngine);
@@ -117,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onResume(){
         super.onResume();
+		file();
         snakeEngine.resume();
 
 
@@ -127,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
     public void onPause(){
         super.onPause();
 
-
+        file();
         snakeEngine.pause();
 
     }
@@ -146,8 +153,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public int read(){
-        String temp="";
+    public String read(){
+        String temp="0";
         try {
             FileInputStream fin = openFileInput(file);
             int c;
@@ -156,17 +163,24 @@ public class MainActivity extends AppCompatActivity {
                 temp = temp + Character.toString((char)c);
 
             }
-            if(temp==""){temp=0+"";}
+          
         }
         catch(Exception e){
         }
-        return Integer.parseInt(temp);
+        return temp;
     }
     public void file(){
-        if(read()<SnakeEngine.highest){
+		int Score=Integer.parseInt(read())+0;
+        if(Score<SnakeEngine.highest){
             write(SnakeEngine.highest);
+			
+			
         }
-        SnakeEngine.highest=read();
+		else{
+			
+			SnakeEngine.highest=Score;
+		}
+		
     }
 
 }
@@ -342,13 +356,12 @@ class SnakeEngine extends SurfaceView implements Runnable {
     public void spawnBob() {
         Random random = new Random();
         bobX = random.nextInt(NUM_BLOCKS_WIDE -1)+1 ;
-        int min=(((numBlocksHigh*4)-(blockSize/2))  /blockSize)+1;
-        int max=(((screenY-numBlocksHigh*5)-(blockSize/2))  /blockSize);
+		int min=(((numBlocksHigh*4)-(blockSize/2))  /blockSize)+1;
+		int max=(((screenY-numBlocksHigh*5)-(blockSize/2))  /blockSize);
         bobY = random.nextInt(max-min) + (min);
 
 
-    }
-
+	}
     private void eatBob(){
         //  Got him!
         // Increase the size of the snake
@@ -438,7 +451,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
             // Fill the screen with Game Code School blue
             canvas.drawColor(Color.argb(255, 0, 0, 0));
 
-            paint.setColor(Color.argb(255, 100, 100, 100));
+            paint.setColor(Color.argb(255, 65, 105, 225));
             Rect r=new Rect(0,numBlocksHigh*4,screenX,screenY-numBlocksHigh*5);
             canvas.drawRect(r,paint);
             // Set the color of the paint to draw the snake white
@@ -455,39 +468,39 @@ class SnakeEngine extends SurfaceView implements Runnable {
             paint.setStrokeCap(Paint.Cap.ROUND);
             paint.setStrokeWidth(25f);
             for (int i = 1; i < snakeLength; i++) {
-               /*
-                canvas.drawRect(snakeXs[i] * blockSize,
-                        (snakeYs[i] * blockSize),
-                        (snakeXs[i] * blockSize) + blockSize,
-                        (snakeYs[i] * blockSize) + blockSize,
-                        paint);
-                   */
-                  canvas.drawPoint((snakeXs[i] * blockSize)+(blockSize/2),
-                		 (snakeYs[i] * blockSize)+(blockSize/2),paint);
+				/*
+				 canvas.drawRect(snakeXs[i] * blockSize,
+				 (snakeYs[i] * blockSize),
+				 (snakeXs[i] * blockSize) + blockSize,
+				 (snakeYs[i] * blockSize) + blockSize,
+				 paint);
+				 */
+				canvas.drawPoint((snakeXs[i] * blockSize)+(blockSize/2),
+								 (snakeYs[i] * blockSize)+(blockSize/2),paint);
             }
             paint.setColor(Color.argb(255, 0, 0, 0));
 			/*
-            canvas.drawRect(snakeXs[0] * blockSize,
-							(snakeYs[0] * blockSize),
-							(snakeXs[0] * blockSize) + blockSize,
-							(snakeYs[0] * blockSize) + blockSize,
-							paint);
-			*/
+			 canvas.drawRect(snakeXs[0] * blockSize,
+			 (snakeYs[0] * blockSize),
+			 (snakeXs[0] * blockSize) + blockSize,
+			 (snakeYs[0] * blockSize) + blockSize,
+			 paint);
+			 */
             canvas.drawPoint((snakeXs[0] * blockSize)+(blockSize/2),
-                    (snakeYs[0] * blockSize)+(blockSize/2),paint);
+							 (snakeYs[0] * blockSize)+(blockSize/2),paint);
             // Set the color of the paint to draw Bob red
             paint.setColor(Color.argb(255, 255, 0, 0));
 
             // Draw Bob
 			/*
-            canvas.drawRect(bobX * blockSize,
-							(bobY * blockSize),
-							(bobX * blockSize) + blockSize,
-							(bobY * blockSize) + blockSize,
-							paint);
-			*/
+			 canvas.drawRect(bobX * blockSize,
+			 (bobY * blockSize),
+			 (bobX * blockSize) + blockSize,
+			 (bobY * blockSize) + blockSize,
+			 paint);
+			 */
             canvas.drawPoint((bobX * blockSize)+(blockSize/2),
-                    (bobY * blockSize)+(blockSize/2),paint);
+							 (bobY * blockSize)+(blockSize/2),paint);
             // Unlock the canvas and reveal the graphics for this frame
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
@@ -518,43 +531,43 @@ class SnakeEngine extends SurfaceView implements Runnable {
     {
         switch (t.getAction())
         {
-            // when user first touches the screen we get x and y coordinate
+				// when user first touches the screen we get x and y coordinate
             case MotionEvent.ACTION_DOWN:
-            {
-                x1 = t.getX();
-                y1 = t.getY();
-                break;
-            }
+				{
+					x1 = t.getX();
+					y1 = t.getY();
+					break;
+				}
             case MotionEvent.ACTION_UP:
-            {
-                x2 = t.getX();
-                y2 = t.getY();
+				{
+					x2 = t.getX();
+					y2 = t.getY();
 
-                float diffY = y2 - y1;
-                float diffX = x2 - x1;
+					float diffY = y2 - y1;
+					float diffX = x2 - x1;
 
 
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > SWIPE_THRESHOLD ) {
-                        if (diffX > 0) {
-                            if(heading!=Heading.LEFT)
-                                heading=Heading.RIGHT;
-                        } else {
-                            if(heading!=Heading.RIGHT)
-                                heading=Heading.LEFT;
-                        }
-                    }
-                } else {
-                    if (Math.abs(diffY) > SWIPE_THRESHOLD ) {
-                        if (diffY > 0) {
-                            if(heading!=Heading.UP)
-                                heading=Heading.DOWN;
-                        } else {
-                            if(heading!=Heading.DOWN)
-                                heading=Heading.UP;
-                        }
-                    }
-                }}
+					if (Math.abs(diffX) > Math.abs(diffY)) {
+						if (Math.abs(diffX) > SWIPE_THRESHOLD ) {
+							if (diffX > 0) {
+								if(heading!=Heading.LEFT)
+									heading=Heading.RIGHT;
+							} else {
+								if(heading!=Heading.RIGHT)
+									heading=Heading.LEFT;
+							}
+						}
+					} else {
+						if (Math.abs(diffY) > SWIPE_THRESHOLD ) {
+							if (diffY > 0) {
+								if(heading!=Heading.UP)
+									heading=Heading.DOWN;
+							} else {
+								if(heading!=Heading.DOWN)
+									heading=Heading.UP;
+							}
+						}
+					}}
 
 
         }	//if left to right sweep event on screen
