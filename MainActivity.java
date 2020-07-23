@@ -1,13 +1,18 @@
-package com.mycompany.myapp2;
+package com.example.myapplication;
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Context;
 
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import android.app.Activity;
-
-
-
-
-import android.app.Activity;
-
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
@@ -48,7 +53,11 @@ import android.view.Window;
 import android.graphics.Rect;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-public class MainActivity extends Activity {
+
+
+
+
+public class MainActivity extends AppCompatActivity {
 
 
 
@@ -58,6 +67,8 @@ public class MainActivity extends Activity {
     Button endGameButton;
     String file="mydata";
     static MediaPlayer mp;
+    EditText editTextFileName,editTextData;
+    Button saveButton,readButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,25 +104,27 @@ public class MainActivity extends Activity {
         endGameButton.setY(0);
 
         endGameButton.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view)
-				{
-					if(Pause==false){
-						endGameButton.setText("Play");
-						snakeEngine.pause();
+            @Override
+            public void onClick(View view)
+            {
+                if(Pause==false){
 
-						Pause=true;
+                    write();
+                    endGameButton.setText("Play");
+                    snakeEngine.pause();
 
-					}else{
-						endGameButton.setText("Pause");
+                    Pause=true;
 
-						snakeEngine.resume();
+                }else{
+                    endGameButton.setText("Pause");
 
-						Pause=false;
-					}
+                    snakeEngine.resume();
 
-				}
-			});
+                    Pause=false;
+                }
+
+            }
+        });
         gameWidgets.addView(endGameButton);
 
         game.addView(snakeEngine);
@@ -123,7 +136,7 @@ public class MainActivity extends Activity {
     @Override
     public void onResume(){
         super.onResume();
-		file();
+         read();
         snakeEngine.resume();
 
 
@@ -134,58 +147,58 @@ public class MainActivity extends Activity {
     public void onPause(){
         super.onPause();
 
-        file();
+        write();
         snakeEngine.pause();
 
     }
 
-    public  void write(int score){
-        String data=score+"";
-        try {
-            FileOutputStream fOut = openFileOutput(file,MODE_WORLD_READABLE);
-            fOut.write(data.getBytes());
-            fOut.close();
+    public  void write(){
+        String filename="HighestScore";
+        String data=SnakeEngine.highest+"";
 
-        }
-        catch (Exception e) {
-            // TODO Auto-generated catch block
+        FileOutputStream fos;
+        try {
+            fos = openFileOutput(filename, Context.MODE_PRIVATE);
+            //default mode is PRIVATE, can be APPEND etc.
+            fos.write(data.getBytes());
+            fos.close();
+
+
+
+
+        } catch (FileNotFoundException e) {e.printStackTrace();}
+        catch (IOException e) {e.printStackTrace();}
+    }
+
+    public void read(){
+        String filename="HighestScore";
+        StringBuffer stringBuffer = new StringBuffer();
+        try {
+            //Attaching BufferedReader to the FileInputStream by the help of InputStreamReader
+            BufferedReader inputReader = new BufferedReader(new InputStreamReader(
+                    openFileInput(filename)));
+            String inputString;
+            //Reading data line by line and storing it into the stringbuffer
+            while ((inputString = inputReader.readLine()) != null) {
+                stringBuffer.append(inputString + "\n");
+            }
+
+        } catch (IOException e) {
             e.printStackTrace();
         }
+        //Displaying data on  the toast
+        //if(stringBuffer==null){ SnakeEngine.highest=0;}
+      //  else{
+       // String sc="";
+         //SnakeEngine.highest=Integer.parseInt("2")+0;
+       //SnakeEngine.delete=Integer.parseInt(stringBuffer.toString().trim());
+      SnakeEngine.highest=Integer.parseInt(stringBuffer.toString().trim());
     }
 
-    public String read(){
-        String temp="0";
-        try {
-            FileInputStream fin = openFileInput(file);
-            int c;
-
-            while( (c = fin.read()) != -1){
-                temp = temp + Character.toString((char)c);
-
-            }
-          
-        }
-        catch(Exception e){
-        }
-        return temp;
-    }
-    public void file(){
-		int Score=Integer.parseInt(read())+0;
-        if(Score<SnakeEngine.highest){
-            write(SnakeEngine.highest);
-			
-			
-        }
-		else{
-			
-			SnakeEngine.highest=Score;
-		}
-		
-    }
 
 }
 class SnakeEngine extends SurfaceView implements Runnable {
-
+    static String delete;
     // Our game thread for the main game loop
     private Thread thread = null;
 
@@ -356,12 +369,12 @@ class SnakeEngine extends SurfaceView implements Runnable {
     public void spawnBob() {
         Random random = new Random();
         bobX = random.nextInt(NUM_BLOCKS_WIDE -1)+1 ;
-		int min=(((numBlocksHigh*4)-(blockSize/2))  /blockSize)+1;
-		int max=(((screenY-numBlocksHigh*5)-(blockSize/2))  /blockSize);
+        int min=(((numBlocksHigh*4)-(blockSize/2))  /blockSize)+1;
+        int max=(((screenY-numBlocksHigh*5)-(blockSize/2))  /blockSize);
         bobY = random.nextInt(max-min) + (min);
 
 
-	}
+    }
     private void eatBob(){
         //  Got him!
         // Increase the size of the snake
@@ -475,8 +488,8 @@ class SnakeEngine extends SurfaceView implements Runnable {
 				 (snakeYs[i] * blockSize) + blockSize,
 				 paint);
 				 */
-				canvas.drawPoint((snakeXs[i] * blockSize)+(blockSize/2),
-								 (snakeYs[i] * blockSize)+(blockSize/2),paint);
+                canvas.drawPoint((snakeXs[i] * blockSize)+(blockSize/2),
+                        (snakeYs[i] * blockSize)+(blockSize/2),paint);
             }
             paint.setColor(Color.argb(255, 0, 0, 0));
 			/*
@@ -487,7 +500,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			 paint);
 			 */
             canvas.drawPoint((snakeXs[0] * blockSize)+(blockSize/2),
-							 (snakeYs[0] * blockSize)+(blockSize/2),paint);
+                    (snakeYs[0] * blockSize)+(blockSize/2),paint);
             // Set the color of the paint to draw Bob red
             paint.setColor(Color.argb(255, 255, 0, 0));
 
@@ -500,7 +513,7 @@ class SnakeEngine extends SurfaceView implements Runnable {
 			 paint);
 			 */
             canvas.drawPoint((bobX * blockSize)+(blockSize/2),
-							 (bobY * blockSize)+(blockSize/2),paint);
+                    (bobY * blockSize)+(blockSize/2),paint);
             // Unlock the canvas and reveal the graphics for this frame
             surfaceHolder.unlockCanvasAndPost(canvas);
         }
@@ -531,43 +544,43 @@ class SnakeEngine extends SurfaceView implements Runnable {
     {
         switch (t.getAction())
         {
-				// when user first touches the screen we get x and y coordinate
+            // when user first touches the screen we get x and y coordinate
             case MotionEvent.ACTION_DOWN:
-				{
-					x1 = t.getX();
-					y1 = t.getY();
-					break;
-				}
+            {
+                x1 = t.getX();
+                y1 = t.getY();
+                break;
+            }
             case MotionEvent.ACTION_UP:
-				{
-					x2 = t.getX();
-					y2 = t.getY();
+            {
+                x2 = t.getX();
+                y2 = t.getY();
 
-					float diffY = y2 - y1;
-					float diffX = x2 - x1;
+                float diffY = y2 - y1;
+                float diffX = x2 - x1;
 
 
-					if (Math.abs(diffX) > Math.abs(diffY)) {
-						if (Math.abs(diffX) > SWIPE_THRESHOLD ) {
-							if (diffX > 0) {
-								if(heading!=Heading.LEFT)
-									heading=Heading.RIGHT;
-							} else {
-								if(heading!=Heading.RIGHT)
-									heading=Heading.LEFT;
-							}
-						}
-					} else {
-						if (Math.abs(diffY) > SWIPE_THRESHOLD ) {
-							if (diffY > 0) {
-								if(heading!=Heading.UP)
-									heading=Heading.DOWN;
-							} else {
-								if(heading!=Heading.DOWN)
-									heading=Heading.UP;
-							}
-						}
-					}}
+                if (Math.abs(diffX) > Math.abs(diffY)) {
+                    if (Math.abs(diffX) > SWIPE_THRESHOLD ) {
+                        if (diffX > 0) {
+                            if(heading!=Heading.LEFT)
+                                heading=Heading.RIGHT;
+                        } else {
+                            if(heading!=Heading.RIGHT)
+                                heading=Heading.LEFT;
+                        }
+                    }
+                } else {
+                    if (Math.abs(diffY) > SWIPE_THRESHOLD ) {
+                        if (diffY > 0) {
+                            if(heading!=Heading.UP)
+                                heading=Heading.DOWN;
+                        } else {
+                            if(heading!=Heading.DOWN)
+                                heading=Heading.UP;
+                        }
+                    }
+                }}
 
 
         }	//if left to right sweep event on screen
