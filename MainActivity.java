@@ -192,7 +192,9 @@ public class MainActivity extends AppCompatActivity {
        // String sc="";
          //SnakeEngine.highest=Integer.parseInt("2")+0;
        //SnakeEngine.delete=Integer.parseInt(stringBuffer.toString().trim());
+      try{
       SnakeEngine.highest=Integer.parseInt(stringBuffer.toString().trim());
+        }catch(Exception e){SnakeEngine.highest=0;}
     }
 
 
